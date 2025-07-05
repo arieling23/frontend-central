@@ -25,9 +25,20 @@ export default function LoginForm() {
 
       login(token);
       router.push('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.response?.data?.message || 'Error al iniciar sesión');
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof (err as any).response === 'object' &&
+        'data' in (err as any).response &&
+        typeof (err as any).response.data === 'object'
+      ) {
+        setError((err as any).response.data.message || 'Error al iniciar sesión');
+      } else {
+        setError('Error desconocido al iniciar sesión');
+      }
     } finally {
       setLoading(false);
     }

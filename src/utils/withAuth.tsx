@@ -5,7 +5,7 @@ import type { ComponentType, FC } from 'react';
 
 type Role = 'admin' | 'user' | string;
 
-export default function withAuth<P extends {}>(
+export default function withAuth<P extends object>(
   WrappedComponent: ComponentType<P>,
   allowedRoles: Role[] = []
 ): FC<P> {
@@ -24,7 +24,6 @@ export default function withAuth<P extends {}>(
       }
     }, [isAuthenticated, user, router]);
 
-    // Protección en renderizado
     if (
       !isAuthenticated ||
       (allowedRoles.length > 0 && !allowedRoles.includes(user?.role || ''))

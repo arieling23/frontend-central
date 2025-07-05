@@ -26,7 +26,6 @@ export default function RegistrationForm() {
     setError('');
     setSuccess('');
 
-    // Validaciones
     if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       setError('Todos los campos son obligatorios.');
       return;
@@ -55,9 +54,20 @@ export default function RegistrationForm() {
       setTimeout(() => {
         router.push('/login');
       }, 2000); 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.response?.data?.message || 'Error al registrarse');
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof (err as any).response === 'object' &&
+        'data' in (err as any).response &&
+        typeof (err as any).response.data === 'object'
+      ) {
+        setError((err as any).response.data.message || 'Error al registrarse');
+      } else {
+        setError('Error desconocido al registrarse');
+      }
     } finally {
       setLoading(false);
     }

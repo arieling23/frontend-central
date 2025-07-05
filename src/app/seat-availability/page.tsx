@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
 
@@ -24,7 +24,7 @@ export default function SeatAvailabilityPage() {
   const [editingSeat, setEditingSeat] = useState<Seat | null>(null);
   const [role, setRole] = useState('');
 
-  const fetchSeats = async () => {
+  const fetchSeats = useCallback(async () => {
     setLoading(true);
     try {
       const response = await api.getAvailableSeats(flightId);
@@ -42,7 +42,7 @@ export default function SeatAvailabilityPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [flightId]);
 
   const createSeat = async () => {
     if (!newSeatNumber.trim()) return;
@@ -94,7 +94,7 @@ export default function SeatAvailabilityPage() {
     if (flightId > 0) {
       fetchSeats();
     }
-  }, [flightId]);
+  }, [flightId, fetchSeats]); 
 
   return (
     <div className="p-4">

@@ -26,7 +26,7 @@ export default function PreferencesForm() {
     try {
       const res = await api.getPreferences();
       setPrefs(res.data);
-    } catch (err) {
+    } catch {
       setMessage('❌ Error al obtener preferencias');
     } finally {
       setLoading(false);
@@ -52,7 +52,6 @@ export default function PreferencesForm() {
 
   const handleUpdate = async () => {
     try {
-      // 🔧 Enviamos solo los campos válidos esperados por el backend
       const { language, theme, emailNotifications, timezone } = prefs;
       await api.updatePreferences({ language, theme, emailNotifications, timezone });
       setMessage('✅ Preferencias actualizadas');

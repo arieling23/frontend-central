@@ -1,13 +1,27 @@
 import axios from 'axios';
 
+// Tipos personalizados
+type UserProfile = {
+  name?: string;
+  bio?: string;
+  phone?: string;
+};
+
+type Preferences = {
+  language: string;
+  theme: 'light' | 'dark';
+  emailNotifications: boolean;
+  timezone: string;
+};
+
 const instance = axios.create({
-   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor para agregar JWT a cada petición si existe
+// Interceptor para agregar JWT
 instance.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
@@ -18,7 +32,7 @@ instance.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor para manejar errores globales
+// Interceptor para errores
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -39,8 +53,8 @@ const api = Object.assign(instance, {
 
   // 👤 Perfil de usuario
   getUserProfile: () => instance.get('/profiles/pro'),
-  updateUserProfile: (data: any) => instance.put('/profiles/pro', data),
-  createUserProfile: (data?: any) =>
+  updateUserProfile: (data: UserProfile) => instance.put('/profiles/pro', data),
+  createUserProfile: (data?: UserProfile) =>
     instance.post('/profiles/pro', data ?? {}),
 
   // 🔄 Recuperación de contraseña
@@ -51,7 +65,7 @@ const api = Object.assign(instance, {
 
   // ⚙️ Preferencias
   getPreferences: () => instance.get('/preferences/me'),
-  updatePreferences: (data: any) => instance.put('/preferences/me', data),
+  updatePreferences: (data: Preferences) => instance.put('/preferences/me', data),
   resetPreferences: () => instance.post('/preferences/reset'),
 
   // 🔐 RBAC
@@ -164,12 +178,9 @@ const api = Object.assign(instance, {
           }
         }
       `,
-      variables: {
-        id: flightId,
-      },
+      variables: { id: flightId },
     }),
 
-  // 🎫 Crear asiento manualmente
   createSeat: (flightId: number, seatNumber: string) =>
     instance.post('/seat', {
       query: `
@@ -179,13 +190,9 @@ const api = Object.assign(instance, {
           }
         }
       `,
-      variables: {
-        flightId,
-        seatNumber,
-      },
+      variables: { flightId, seatNumber },
     }),
 
-  // 🎫 Eliminar asiento
   deleteSeat: (seatId: number) =>
     instance.post('/seat', {
       query: `
@@ -193,12 +200,9 @@ const api = Object.assign(instance, {
           deleteSeat(seatId: $seatId)
         }
       `,
-      variables: {
-        seatId,
-      },
+      variables: { seatId },
     }),
 
-  // 🎫 Actualizar asiento
   updateSeat: (
     seatId: number,
     data: { seatNumber: string; isAvailable: boolean }
@@ -274,7 +278,7 @@ const api = Object.assign(instance, {
       variables: { id },
     }),
 
-    // 💲 Reglas de Precios (GraphQL)
+  // 💲 Reglas de Precios (GraphQL)
   getPricingRules: () =>
     instance.post('/pricing', {
       query: `
@@ -301,11 +305,7 @@ const api = Object.assign(instance, {
           }
         }
       `,
-      variables: {
-        ruleName,
-        basePrice,
-        multiplier,
-      },
+      variables: { ruleName, basePrice, multiplier },
     }),
 });
 

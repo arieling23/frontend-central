@@ -25,7 +25,6 @@ export default function RBACPage() {
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(true);
 
-  // 🔐 Validar token y rol
   useEffect(() => {
     const stored = localStorage.getItem('token');
     if (!stored) {
@@ -35,7 +34,6 @@ export default function RBACPage() {
 
     try {
       const decoded: DecodedJWT = jwtDecode(stored);
-
       if (decoded.role !== 'admin') {
         router.push('/unauthorized');
         return;
@@ -48,7 +46,6 @@ export default function RBACPage() {
     }
   }, [router]);
 
-  // 📋 Obtener roles desde ms-rbac
   useEffect(() => {
     if (!token) return;
 
@@ -63,6 +60,7 @@ export default function RBACPage() {
         const data: Role[] = await res.json();
         setRoles(data);
       } catch (error: unknown) {
+        console.error('❌ Error al obtener roles:', error);
         setMensaje('❌ Error al obtener roles');
       } finally {
         setCargando(false);
@@ -72,7 +70,6 @@ export default function RBACPage() {
     fetchRoles();
   }, [token]);
 
-  // 📨 Enviar asignación de rol
   const handleAssign = async () => {
     if (!userId || !selectedRole) {
       setMensaje('⚠️ Debes completar todos los campos');
@@ -99,6 +96,7 @@ export default function RBACPage() {
         setMensaje('❌ Error: ' + (data.message || 'No se pudo asignar el rol'));
       }
     } catch (error: unknown) {
+      console.error('❌ Error inesperado al asignar rol:', error);
       setMensaje('❌ Error inesperado al asignar rol');
     }
   };

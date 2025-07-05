@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const decoded = decodeToken<DecodedToken>(token);
         setIsAuthenticated(true);
         setUser(decoded);
-      } catch (err) {
+      } catch {
         console.error('❌ Token inválido');
         removeToken();
         setIsAuthenticated(false);
@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       saveToken(token);
       setIsAuthenticated(true);
       setUser(decoded);
-    } catch (err) {
+    } catch {
       console.error('❌ No se pudo decodificar el token');
     }
   };

@@ -25,9 +25,20 @@ export default function RecuperarContraseñaPage() {
       setTimeout(() => {
         router.push('/password-recovery/verify-token');
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.response?.data?.error || '❌ Error al enviar la solicitud.');
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof (err as any).response === 'object' &&
+        'data' in (err as any).response &&
+        typeof (err as any).response.data === 'object'
+      ) {
+        setError((err as any).response.data.error || '❌ Error al enviar la solicitud.');
+      } else {
+        setError('❌ Error desconocido al enviar la solicitud.');
+      }
     } finally {
       setLoading(false);
     }

@@ -29,8 +29,14 @@ export default function PerfilPage() {
         const res = await api.getUserProfile();
         setProfile(res.data);
         setProfileExists(true);
-      } catch (err: any) {
-        if (err?.response?.status === 404) {
+      } catch (err: unknown) {
+        if (
+          typeof err === 'object' &&
+          err !== null &&
+          'response' in err &&
+          typeof (err as any).response === 'object' &&
+          (err as any).response?.status === 404
+        ) {
           setProfileExists(false);
         } else {
           console.error('❌ Error al obtener el perfil:', err);

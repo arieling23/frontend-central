@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 type Airport = {
@@ -37,7 +37,6 @@ export default function AirportInfoPage() {
 
   useEffect(() => {
     setIsClient(true);
-
     const storedToken = localStorage.getItem('token');
     setToken(storedToken);
 
@@ -51,7 +50,7 @@ export default function AirportInfoPage() {
     }
   }, []);
 
-  const fetchAirports = async () => {
+  const fetchAirports = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -91,13 +90,13 @@ export default function AirportInfoPage() {
     }
 
     setLoading(false);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (token) {
       fetchAirports();
     }
-  }, [token]);
+  }, [token, fetchAirports]);
 
   const handleCreate = async () => {
     if (!newAirport.name || !newAirport.city || !newAirport.country || !newAirport.iataCode) {

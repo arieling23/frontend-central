@@ -67,7 +67,7 @@ export default function RoutesCatalogPage() {
       } else {
         setRoutes(res.data.data.getRoutes);
       }
-    } catch (e) {
+    } catch {
       setError("Error al conectar con el backend.");
     }
   };
@@ -115,7 +115,7 @@ export default function RoutesCatalogPage() {
         });
         fetchRoutes();
       }
-    } catch (e) {
+    } catch {
       setError("Error al crear la ruta.");
     }
   };
@@ -134,7 +134,7 @@ export default function RoutesCatalogPage() {
             className="border p-2 mb-2 w-full"
             placeholder="Nombre de la ruta"
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onChange={({ target: { value } }) => setForm({ ...form, name: value })}
           />
 
           {form.segments.map((segment, index) => (
@@ -143,20 +143,20 @@ export default function RoutesCatalogPage() {
                 className="border p-2 mr-2"
                 placeholder="Origen"
                 value={segment.origin}
-                onChange={(e) => updateSegment(index, "origin", e.target.value)}
+                onChange={({ target: { value } }) => updateSegment(index, "origin", value)}
               />
               <input
                 className="border p-2 mr-2"
                 placeholder="Destino"
                 value={segment.destination}
-                onChange={(e) => updateSegment(index, "destination", e.target.value)}
+                onChange={({ target: { value } }) => updateSegment(index, "destination", value)}
               />
               <input
                 type="number"
                 className="border p-2"
                 placeholder="Distancia"
                 value={segment.distanceKm}
-                onChange={(e) => updateSegment(index, "distanceKm", e.target.value)}
+                onChange={({ target: { value } }) => updateSegment(index, "distanceKm", value)}
               />
               <button
                 type="button"
