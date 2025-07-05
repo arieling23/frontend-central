@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios, { AxiosError } from 'axios';
 
-export default function ResetPasswordPage() {
+// Obliga a Next.js a no prerenderizar esta página
+export const dynamic = 'force-dynamic';
+
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token'); // Se obtiene desde la URL: ?token=xxxxx
@@ -30,7 +33,7 @@ export default function ResetPasswordPage() {
       });
 
       setMessage(res.data.message);
-      setTimeout(() => router.push('/login'), 3000); // Redirige después de 3s
+      setTimeout(() => router.push('/login'), 3000);
     } catch (err: unknown) {
       const axiosErr = err as AxiosError<{ error: string }>;
       const msg = axiosErr.response?.data?.error || 'Ocurrió un error';
@@ -63,5 +66,13 @@ export default function ResetPasswordPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<p className="text-center mt-10">Cargando...</p>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

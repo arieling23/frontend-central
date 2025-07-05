@@ -12,13 +12,20 @@ export default function VerifyTokenPage() {
     e.preventDefault();
     setError('');
 
-    if (!token.trim()) {
+    const trimmedToken = token.trim();
+
+    if (!trimmedToken) {
       setError('Por favor, ingresa el código recibido por correo.');
       return;
     }
 
-    // Redirige a la página de restablecimiento con el token
-    router.push(`/password-recovery/reset?token=${encodeURIComponent(token)}`);
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(trimmedToken)) {
+      setError('El código ingresado no tiene un formato válido.');
+      return;
+    }
+
+    router.push(`/password-recovery/reset?token=${encodeURIComponent(trimmedToken)}`);
   };
 
   return (
@@ -44,7 +51,8 @@ export default function VerifyTokenPage() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          disabled={!token.trim()}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
         >
           Verificar Código
         </button>
