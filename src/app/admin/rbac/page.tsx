@@ -42,7 +42,7 @@ export default function RBACPage() {
       }
 
       setToken(stored);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error al decodificar el token', err);
       router.push('/login');
     }
@@ -51,18 +51,25 @@ export default function RBACPage() {
   // 📋 Obtener roles desde ms-rbac
   useEffect(() => {
     if (!token) return;
-    fetch('http://localhost:4005/api/rbac/roles', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch('http://localhost:4005/api/rbac/roles', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error('No se pudo obtener roles');
+
+        const data: Role[] = await res.json();
         setRoles(data);
-        setCargando(false);
-      })
-      .catch(() => {
+      } catch (error: unknown) {
         setMensaje('❌ Error al obtener roles');
+      } finally {
         setCargando(false);
-      });
+      }
+    };
+
+    fetchRoles();
   }, [token]);
 
   // 📨 Enviar asignación de rol
@@ -72,22 +79,27 @@ export default function RBACPage() {
       return;
     }
 
-    const res = await fetch('http://localhost:4005/api/rbac/assign-role', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ userId, role: selectedRole }),
-    });
+    try {
+      const res = await fetch('http://localhost:4005/api/rbac/assign-role', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, role: selectedRole }),
+      });
 
-    const data = await res.json();
-    if (res.ok) {
-      setMensaje('✅ Rol asignado correctamente');
-      setUserId('');
-      setSelectedRole('');
-    } else {
-      setMensaje('❌ Error: ' + (data.message || 'No se pudo asignar el rol'));
+      const data = await res.json();
+
+      if (res.ok) {
+        setMensaje('✅ Rol asignado correctamente');
+        setUserId('');
+        setSelectedRole('');
+      } else {
+        setMensaje('❌ Error: ' + (data.message || 'No se pudo asignar el rol'));
+      }
+    } catch (error: unknown) {
+      setMensaje('❌ Error inesperado al asignar rol');
     }
   };
 
@@ -100,8 +112,8 @@ export default function RBACPage() {
       <section className="mb-10">
         <h2 className="text-xl font-semibold mb-2">📋 Roles Disponibles</h2>
         <ul className="list-disc list-inside">
-          {roles.map((role, index) => (
-            <li key={index}>
+          {roles.map((role) => (
+            <li key={role.name}>
               <strong>{role.name}</strong> — Permisos: {role.permissions.join(', ')}
             </li>
           ))}
@@ -124,8 +136,8 @@ export default function RBACPage() {
             onChange={(e) => setSelectedRole(e.target.value)}
           >
             <option value="">-- Selecciona un rol --</option>
-            {roles.map((role, index) => (
-              <option key={index} value={role.name}>
+            {roles.map((role) => (
+              <option key={role.name} value={role.name}>
                 {role.name}
               </option>
             ))}

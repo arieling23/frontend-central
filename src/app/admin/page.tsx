@@ -2,8 +2,9 @@
 
 import withAuth from '@/utils/withAuth';
 import { useAuth } from '@/app/context/AuthContext';
+import type { FC } from 'react';
 
-function AdminPage() {
+const AdminPage: FC = () => {
   const { user } = useAuth();
 
   return (
@@ -12,7 +13,7 @@ function AdminPage() {
       <p>Bienvenido, administrador <strong>{user?.email}</strong></p>
     </main>
   );
-}
+};
 
 // Solo 'admin' puede acceder
 export default withAuth(AdminPage, ['admin']);

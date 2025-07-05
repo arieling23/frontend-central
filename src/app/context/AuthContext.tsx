@@ -15,6 +15,7 @@ interface AuthContextType {
   user: DecodedToken | null;
   login: (token: string) => void;
   logout: () => void;
+  loading: boolean; 
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -22,11 +23,13 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   login: () => {},
   logout: () => {},
+  loading: true, 
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<DecodedToken | null>(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const token = getToken();
@@ -42,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
       }
     }
+    setLoading(false); 
   }, []);
 
   const login = (token: string) => {
@@ -63,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
