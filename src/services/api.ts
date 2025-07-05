@@ -44,7 +44,7 @@ instance.interceptors.response.use(
 const api = Object.assign(instance, {
   // 🔐 Autenticación y registro
   register: (name: string, email: string, password: string) =>
-    instance.post('/users/register', { name, email, password }),
+    instance.post('/api/users/register', { name, email, password }),
 
   login: (email: string, password: string) =>
     instance.post('/auth/login', { email, password }),
