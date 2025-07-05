@@ -49,12 +49,12 @@ export default function RegistrationForm() {
 
     setLoading(true);
     try {
-      await api.register(name, email, password); // solo registramos
+      await api.register(name, email, password); 
 
       setSuccess('Registro exitoso. Inicia sesión para continuar.');
       setTimeout(() => {
         router.push('/login');
-      }, 2000); // espera 2s antes de redirigir
+      }, 2000); 
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.message || 'Error al registrarse');
