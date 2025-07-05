@@ -22,6 +22,19 @@ export function decodeToken<T>(token: string): T {
   return jwtDecode<T>(token);
 }
 
+// Verifica si el token es válido (no expirado)
+export function isTokenValid(): boolean {
+  const token = getToken();
+  if (!token) return false;
+
+  try {
+    const decoded = decodeToken<DecodedToken>(token);
+    return decoded.exp * 1000 > Date.now(); // exp en segundos → milisegundos
+  } catch {
+    return false;
+  }
+}
+
 // Decodifica el token guardado y retorna los datos del usuario
 export function getUserFromToken(): DecodedToken | null {
   const token = getToken();

@@ -39,21 +39,26 @@ const PricingRulesPage: React.FC = () => {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const base = parseFloat(form.base);
+    const multi = parseFloat(form.multi);
+
+    if (!form.name || isNaN(base) || isNaN(multi)) {
+      alert('❗ Todos los campos deben estar completos y válidos.');
+      return;
+    }
+
     try {
       await api.post('/pricing', {
         query: `
-          mutation {
-            createPricingRule(
-              ruleName: "${form.name}",
-              basePrice: ${form.base},
-              multiplier: ${form.multi}
-            ) {
+          mutation CreateRule($ruleName: String!, $basePrice: Float!, $multiplier: Float!) {
+            createPricingRule(ruleName: $ruleName, basePrice: $basePrice, multiplier: $multiplier) {
               id
               ruleName
               basePrice
@@ -61,6 +66,11 @@ const PricingRulesPage: React.FC = () => {
             }
           }
         `,
+        variables: {
+          ruleName: form.name,
+          basePrice: base,
+          multiplier: multi,
+        },
       });
       setForm({ name: '', base: '', multi: '' });
       loadRules();
@@ -73,7 +83,6 @@ const PricingRulesPage: React.FC = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Gestión de Tarifas</h1>
 
-      {/* Solo el admin puede ver el formulario */}
       {user?.role === 'admin' && (
         <form onSubmit={handleSubmit} className="space-y-2 mb-6">
           <input
@@ -103,13 +112,15 @@ const PricingRulesPage: React.FC = () => {
             required
             className="border p-2 w-full"
           />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
             Crear
           </button>
         </form>
       )}
 
-      {/* Visualización de reglas con precio final */}
       <h2 className="text-xl font-semibold mb-2">Reglas actuales</h2>
       <ul className="space-y-1">
         {rules.map((rule) => {

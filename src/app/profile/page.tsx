@@ -30,7 +30,7 @@ export default function PerfilPage() {
         setProfile(res.data);
         setProfileExists(true);
       } catch (err: any) {
-        if (err.response?.status === 404) {
+        if (err?.response?.status === 404) {
           setProfileExists(false);
         } else {
           console.error('❌ Error al obtener el perfil:', err);
@@ -43,30 +43,35 @@ export default function PerfilPage() {
     fetchProfile();
   }, [isAuthenticated, user, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       if (profileExists) {
         await api.updateUserProfile(profile);
-        alert('Perfil actualizado correctamente');
+        alert('✅ Perfil actualizado correctamente');
       } else {
         await api.createUserProfile(profile);
-        alert('Perfil creado correctamente');
+        alert('✅ Perfil creado correctamente');
         setProfileExists(true);
       }
       setEditMode(false);
     } catch (err) {
       console.error('❌ Error al guardar el perfil:', err);
-      alert('Error al guardar el perfil');
+      alert('❌ No se pudo guardar el perfil');
     }
   };
 
-  if (loading) return <p className="text-center mt-10">Cargando perfil...</p>;
+  if (loading) {
+    return <p className="text-center mt-10">Cargando perfil...</p>;
+  }
 
   return (
     <main className="max-w-xl mx-auto p-6">
@@ -83,7 +88,7 @@ export default function PerfilPage() {
         <div className="flex gap-4 mb-6">
           <button
             onClick={() => setEditMode(true)}
-            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
           >
             {profileExists ? 'Editar perfil' : 'Crear perfil'}
           </button>
@@ -92,8 +97,9 @@ export default function PerfilPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block font-medium">Biografía</label>
+          <label htmlFor="bio" className="block font-medium">Biografía</label>
           <textarea
+            id="bio"
             name="bio"
             value={profile.bio}
             onChange={handleChange}
@@ -103,8 +109,9 @@ export default function PerfilPage() {
         </div>
 
         <div>
-          <label className="block font-medium">Teléfono</label>
+          <label htmlFor="phone" className="block font-medium">Teléfono</label>
           <input
+            id="phone"
             type="text"
             name="phone"
             value={profile.phone}

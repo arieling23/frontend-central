@@ -1,7 +1,8 @@
 'use client';
+
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -23,15 +24,16 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const res = await axios.post('http://localhost:8081/api/recovery/reset', {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/recovery/reset`, {
         token,
         newPassword,
       });
 
       setMessage(res.data.message);
       setTimeout(() => router.push('/login'), 3000); // Redirige después de 3s
-    } catch (err: any) {
-      const msg = err.response?.data?.error || 'Ocurrió un error';
+    } catch (err: unknown) {
+      const axiosErr = err as AxiosError<{ error: string }>;
+      const msg = axiosErr.response?.data?.error || 'Ocurrió un error';
       setError(msg);
     }
   };

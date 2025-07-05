@@ -16,10 +16,7 @@ export default function withAuth<P extends {}>(
     useEffect(() => {
       if (!isAuthenticated) {
         router.push('/login');
-        return;
-      }
-
-      if (
+      } else if (
         allowedRoles.length > 0 &&
         !allowedRoles.includes(user?.role || '')
       ) {
@@ -27,20 +24,15 @@ export default function withAuth<P extends {}>(
       }
     }, [isAuthenticated, user, router]);
 
-    if (!isAuthenticated) {
+    // Protección en renderizado
+    if (
+      !isAuthenticated ||
+      (allowedRoles.length > 0 && !allowedRoles.includes(user?.role || ''))
+    ) {
       return <p className="text-center mt-10">Verificando sesión...</p>;
     }
 
-    if (
-      allowedRoles.length > 0 &&
-      !allowedRoles.includes(user?.role || '')
-    ) {
-      return (
-        <p className="text-center mt-10 text-red-600">Acceso denegado</p>
-      );
-    }
-
-    return <WrappedComponent {...props} />; // ✅ ya no lanza error
+    return <WrappedComponent {...props} />;
   };
 
   return ProtectedComponent;

@@ -10,12 +10,18 @@ type JwtPayload = {
   iat: number;
 };
 
+type Seat = {
+  id: number;
+  seatNumber: string;
+  isAvailable: boolean;
+};
+
 export default function SeatAvailabilityPage() {
   const [flightId, setFlightId] = useState<number>(1);
-  const [seats, setSeats] = useState<any[]>([]);
+  const [seats, setSeats] = useState<Seat[]>([]);
   const [loading, setLoading] = useState(false);
   const [newSeatNumber, setNewSeatNumber] = useState('');
-  const [editingSeat, setEditingSeat] = useState<any>(null);
+  const [editingSeat, setEditingSeat] = useState<Seat | null>(null);
   const [role, setRole] = useState('');
 
   const fetchSeats = async () => {
@@ -24,10 +30,10 @@ export default function SeatAvailabilityPage() {
       const response = await api.getAvailableSeats(flightId);
       const seatData = response?.data?.data?.availableSeats;
 
-      if (seatData && Array.isArray(seatData)) {
+      if (Array.isArray(seatData)) {
         setSeats(seatData);
       } else {
-        console.warn('⚠️ La respuesta de asientos es nula o no es un array:', response?.data);
+        console.warn('⚠️ La respuesta de asientos es inválida:', response?.data);
         setSeats([]);
       }
     } catch (error) {
@@ -39,9 +45,9 @@ export default function SeatAvailabilityPage() {
   };
 
   const createSeat = async () => {
-    if (!newSeatNumber) return;
+    if (!newSeatNumber.trim()) return;
     try {
-      await api.createSeat(flightId, newSeatNumber);
+      await api.createSeat(flightId, newSeatNumber.trim());
       setNewSeatNumber('');
       fetchSeats();
     } catch (error) {
@@ -59,6 +65,7 @@ export default function SeatAvailabilityPage() {
   };
 
   const updateSeat = async () => {
+    if (!editingSeat) return;
     try {
       await api.updateSeat(editingSeat.id, {
         seatNumber: editingSeat.seatNumber,
@@ -84,7 +91,9 @@ export default function SeatAvailabilityPage() {
   }, []);
 
   useEffect(() => {
-    fetchSeats();
+    if (flightId > 0) {
+      fetchSeats();
+    }
   }, [flightId]);
 
   return (
@@ -98,6 +107,7 @@ export default function SeatAvailabilityPage() {
         value={flightId}
         onChange={(e) => setFlightId(Number(e.target.value))}
         className="border px-2 py-1 mb-4"
+        min={1}
       />
 
       {role === 'admin' && (
@@ -109,7 +119,11 @@ export default function SeatAvailabilityPage() {
             onChange={(e) => setNewSeatNumber(e.target.value)}
             className="border px-2 py-1 mr-2"
           />
-          <button onClick={createSeat} className="bg-green-500 text-white px-3 py-1 rounded">
+          <button
+            type="button"
+            onClick={createSeat}
+            className="bg-green-500 text-white px-3 py-1 rounded"
+          >
             Crear asiento
           </button>
         </div>
@@ -143,8 +157,20 @@ export default function SeatAvailabilityPage() {
                         <option value="true">Disponible</option>
                         <option value="false">Ocupado</option>
                       </select>
-                      <button onClick={updateSeat} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">Guardar</button>
-                      <button onClick={() => setEditingSeat(null)} className="bg-gray-500 text-white px-2 py-1 rounded">Cancelar</button>
+                      <button
+                        type="button"
+                        onClick={updateSeat}
+                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                      >
+                        Guardar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingSeat(null)}
+                        className="bg-gray-500 text-white px-2 py-1 rounded"
+                      >
+                        Cancelar
+                      </button>
                     </>
                   )
                 ) : (
@@ -155,8 +181,20 @@ export default function SeatAvailabilityPage() {
                     </span>
                     {role === 'admin' && (
                       <div className="space-x-2">
-                        <button onClick={() => setEditingSeat(seat)} className="bg-yellow-500 text-white px-2 py-1 rounded">Editar</button>
-                        <button onClick={() => deleteSeat(seat.id)} className="bg-red-500 text-white px-2 py-1 rounded">Eliminar</button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingSeat(seat)}
+                          className="bg-yellow-500 text-white px-2 py-1 rounded"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteSeat(seat.id)}
+                          className="bg-red-500 text-white px-2 py-1 rounded"
+                        >
+                          Eliminar
+                        </button>
                       </div>
                     )}
                   </>

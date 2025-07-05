@@ -29,15 +29,12 @@ export default function RoutesCatalogPage() {
   const [error, setError] = useState("");
   const [role, setRole] = useState("");
 
-  const [form, setForm] = useState<{
-    name: string;
-    segments: Segment[];
-  }>({
+  const [form, setForm] = useState({
     name: "",
     segments: [{ origin: "", destination: "", distanceKm: 0 }],
   });
 
-  // Autenticación y rol
+  // Validar token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -54,7 +51,7 @@ export default function RoutesCatalogPage() {
         return;
       }
       setRole(decoded.role);
-    } catch (e) {
+    } catch {
       setError("Token inválido.");
       localStorage.removeItem("token");
       window.location.href = "/login";
@@ -79,36 +76,32 @@ export default function RoutesCatalogPage() {
     fetchRoutes();
   }, []);
 
-  // Formulario dinámico
+  // Actualizar formulario
   const addSegment = () => {
-    setForm({
-      ...form,
-      segments: [...form.segments, { origin: "", destination: "", distanceKm: 0 }],
-    });
+    setForm((prev) => ({
+      ...prev,
+      segments: [...prev.segments, { origin: "", destination: "", distanceKm: 0 }],
+    }));
   };
 
   const removeSegment = (index: number) => {
-    const newSegments = [...form.segments];
-    newSegments.splice(index, 1);
-    setForm({ ...form, segments: newSegments });
+    const updated = [...form.segments];
+    updated.splice(index, 1);
+    setForm({ ...form, segments: updated });
   };
 
   const updateSegment = (
-  index: number,
-  field: keyof Segment,
-  value: string | number
-) => {
-  const newSegments = [...form.segments];
-
-  // Hacemos una copia explícita del segmento y forzamos el tipo correcto
-  const updatedSegment: Segment = {
-    ...newSegments[index],
-    [field]: field === "distanceKm" ? parseInt(value as string) : value,
+    index: number,
+    field: keyof Segment,
+    value: string | number
+  ) => {
+    const updated = [...form.segments];
+    updated[index] = {
+      ...updated[index],
+      [field]: field === "distanceKm" ? parseInt(value as string) : value,
+    };
+    setForm({ ...form, segments: updated });
   };
-
-  newSegments[index] = updatedSegment;
-  setForm({ ...form, segments: newSegments });
-};
 
   const createRouteWithSegments = async () => {
     try {
@@ -139,7 +132,7 @@ export default function RoutesCatalogPage() {
 
           <input
             className="border p-2 mb-2 w-full"
-            placeholder="Nombre de la ruta (ej. Quito-Guayaquil)"
+            placeholder="Nombre de la ruta"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
@@ -166,6 +159,7 @@ export default function RoutesCatalogPage() {
                 onChange={(e) => updateSegment(index, "distanceKm", e.target.value)}
               />
               <button
+                type="button"
                 className="ml-2 text-red-500"
                 onClick={() => removeSegment(index)}
               >
@@ -175,6 +169,7 @@ export default function RoutesCatalogPage() {
           ))}
 
           <button
+            type="button"
             onClick={addSegment}
             className="text-blue-600 underline mb-4"
           >
@@ -195,7 +190,7 @@ export default function RoutesCatalogPage() {
           <li key={route.id} className="border p-4 rounded shadow">
             <div className="font-semibold mb-2">Ruta: {route.name}</div>
             {route.segments.map((segment) => (
-              <div key={segment.id} className="pl-2">
+              <div key={`${segment.origin}-${segment.destination}`} className="pl-2">
                 ➤ {segment.origin} ➡ {segment.destination} ({segment.distanceKm} km)
               </div>
             ))}
