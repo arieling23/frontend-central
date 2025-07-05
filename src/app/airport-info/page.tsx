@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 type Airport = {
   id: number;
@@ -17,6 +17,8 @@ type JwtPayload = {
   iat: number;
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api';
+
 export default function AirportInfoPage() {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,6 @@ export default function AirportInfoPage() {
   const [role, setRole] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
 
-  // Estados para creación y edición
   const [newAirport, setNewAirport] = useState({
     name: '',
     city: '',
@@ -67,7 +68,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch('http://localhost:8081/api/airport', {
+      const response = await fetch(`${API_URL}/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +85,7 @@ export default function AirportInfoPage() {
       } else {
         setAirports(json.data.airports);
       }
-    } catch (e) {
+    } catch {
       setError('Error de conexión con el servidor');
       setAirports([]);
     }
@@ -98,7 +99,6 @@ export default function AirportInfoPage() {
     }
   }, [token]);
 
-  // Crear aeropuerto
   const handleCreate = async () => {
     if (!newAirport.name || !newAirport.city || !newAirport.country || !newAirport.iataCode) {
       alert('Todos los campos son obligatorios');
@@ -118,7 +118,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch('http://localhost:8081/api/airport', {
+      const response = await fetch(`${API_URL}/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,22 +138,18 @@ export default function AirportInfoPage() {
         fetchAirports();
         setNewAirport({ name: '', city: '', country: '', iataCode: '' });
       }
-    } catch (e) {
+    } catch {
       alert('Error al crear aeropuerto');
     }
   };
 
-  // Editar aeropuerto (solo estado local)
-  const startEditing = (airport: Airport) => {
-    setEditingAirport(airport);
-  };
+  const startEditing = (airport: Airport) => setEditingAirport(airport);
 
   const handleEditChange = (field: keyof Airport, value: string) => {
     if (!editingAirport) return;
     setEditingAirport({ ...editingAirport, [field]: value });
   };
 
-  // Guardar edición
   const saveEdit = async () => {
     if (!editingAirport) return;
 
@@ -170,7 +166,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch('http://localhost:8081/api/airport', {
+      const response = await fetch(`${API_URL}/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -190,15 +186,13 @@ export default function AirportInfoPage() {
         fetchAirports();
         setEditingAirport(null);
       }
-    } catch (e) {
+    } catch {
       alert('Error al actualizar aeropuerto');
     }
   };
 
-  // Cancelar edición
   const cancelEdit = () => setEditingAirport(null);
 
-  // Eliminar aeropuerto
   const deleteAirport = async (id: number) => {
     const mutation = `
       mutation DeleteAirport($id: Int!) {
@@ -207,7 +201,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch('http://localhost:8081/api/airport', {
+      const response = await fetch(`${API_URL}/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -226,7 +220,7 @@ export default function AirportInfoPage() {
       } else {
         fetchAirports();
       }
-    } catch (e) {
+    } catch {
       alert('Error al eliminar aeropuerto');
     }
   };

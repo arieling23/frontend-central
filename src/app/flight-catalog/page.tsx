@@ -17,6 +17,8 @@ type JwtPayload = {
   iat: number;
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api";
+
 export default function FlightCatalogPage() {
   const [vuelos, setVuelos] = useState<Vuelo[]>([]);
   const [error, setError] = useState("");
@@ -47,7 +49,7 @@ export default function FlightCatalogPage() {
       }
 
       setRole(decoded.role);
-    } catch (e) {
+    } catch {
       setError("Token inválido.");
       localStorage.removeItem("token");
       window.location.href = "/login";
@@ -57,7 +59,7 @@ export default function FlightCatalogPage() {
   const fetchFlights = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:8081/api/flight-catalog", {
+      const res = await fetch(`${API_URL}/flight-catalog`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +100,7 @@ export default function FlightCatalogPage() {
   const createFlight = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:8081/api/flight-catalog", {
+      const res = await fetch(`${API_URL}/flight-catalog`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,17 +108,13 @@ export default function FlightCatalogPage() {
         },
         body: JSON.stringify({
           query: `
-            mutation {
-              createFlight(
-                code: "${form.code}",
-                origin: "${form.origin}",
-                destination: "${form.destination}",
-                departureTime: "${form.departureTime}"
-              ) {
+            mutation CreateFlight($code: String!, $origin: String!, $destination: String!, $departureTime: String!) {
+              createFlight(code: $code, origin: $origin, destination: $destination, departureTime: $departureTime) {
                 id
               }
             }
           `,
+          variables: form,
         }),
       });
 
@@ -127,7 +125,7 @@ export default function FlightCatalogPage() {
         setForm({ code: "", origin: "", destination: "", departureTime: "" });
         fetchFlights();
       }
-    } catch (e) {
+    } catch {
       setError("Error al enviar datos al backend.");
     }
   };
