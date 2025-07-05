@@ -37,7 +37,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         source: ".env.local"
-        target: "/home/${{ secrets.EC2_USER }}/frontend-central/.env.local"
+        target: "/home/${{ secrets.EC2_USER }}/frontend-central/"  # ✅ Solo la carpeta, no el archivo
 
     - name: Desplegar en EC2 (QA)
       uses: appleboy/ssh-action@v1.0.3
