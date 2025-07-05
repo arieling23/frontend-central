@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/services/api';
+import type { AxiosError } from 'axios';
 
 export default function RecuperarContraseñaPage() {
   const [email, setEmail] = useState('');
@@ -11,7 +12,7 @@ export default function RecuperarContraseñaPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMensaje('');
     setError('');
@@ -26,19 +27,9 @@ export default function RecuperarContraseñaPage() {
         router.push('/password-recovery/verify-token');
       }, 3000);
     } catch (err: unknown) {
-      console.error(err);
-      if (
-        typeof err === 'object' &&
-        err !== null &&
-        'response' in err &&
-        typeof (err as any).response === 'object' &&
-        'data' in (err as any).response &&
-        typeof (err as any).response.data === 'object'
-      ) {
-        setError((err as any).response.data.error || '❌ Error al enviar la solicitud.');
-      } else {
-        setError('❌ Error desconocido al enviar la solicitud.');
-      }
+      const axiosError = err as AxiosError<{ error?: string }>;
+      const message = axiosError.response?.data?.error ?? '❌ Error al enviar la solicitud.';
+      setError(message);
     } finally {
       setLoading(false);
     }

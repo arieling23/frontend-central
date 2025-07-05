@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/services/api';
 import { useAuth } from '@/app/context/AuthContext';
+import type { AxiosError } from 'axios';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -26,19 +27,9 @@ export default function LoginForm() {
       login(token);
       router.push('/');
     } catch (err: unknown) {
-      console.error(err);
-      if (
-        typeof err === 'object' &&
-        err !== null &&
-        'response' in err &&
-        typeof (err as any).response === 'object' &&
-        'data' in (err as any).response &&
-        typeof (err as any).response.data === 'object'
-      ) {
-        setError((err as any).response.data.message || 'Error al iniciar sesión');
-      } else {
-        setError('Error desconocido al iniciar sesión');
-      }
+      const axiosError = err as AxiosError<{ message?: string }>;
+      const message = axiosError.response?.data?.message ?? 'Error desconocido al iniciar sesión';
+      setError(`❌ ${message}`);
     } finally {
       setLoading(false);
     }

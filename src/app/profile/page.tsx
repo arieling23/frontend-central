@@ -4,16 +4,18 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { api } from '@/services/api';
+import type { AxiosError } from 'axios';
+
+interface UserProfile {
+  bio: string;
+  phone: string;
+}
 
 export default function PerfilPage() {
   const { isAuthenticated, user } = useAuth();
   const router = useRouter();
 
-  const [profile, setProfile] = useState({
-    bio: '',
-    phone: '',
-  });
-
+  const [profile, setProfile] = useState<UserProfile>({ bio: '', phone: '' });
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [profileExists, setProfileExists] = useState(false);
@@ -30,13 +32,8 @@ export default function PerfilPage() {
         setProfile(res.data);
         setProfileExists(true);
       } catch (err: unknown) {
-        if (
-          typeof err === 'object' &&
-          err !== null &&
-          'response' in err &&
-          typeof (err as any).response === 'object' &&
-          (err as any).response?.status === 404
-        ) {
+        const axiosError = err as AxiosError;
+        if (axiosError.response?.status === 404) {
           setProfileExists(false);
         } else {
           console.error('❌ Error al obtener el perfil:', err);
@@ -56,7 +53,7 @@ export default function PerfilPage() {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {

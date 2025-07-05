@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/services/api';
+import type { AxiosError } from 'axios';
 
 export default function RegistrationForm() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function RegistrationForm() {
     return regex.test(email);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -48,26 +49,16 @@ export default function RegistrationForm() {
 
     setLoading(true);
     try {
-      await api.register(name, email, password); 
+      await api.register(name, email, password);
 
       setSuccess('Registro exitoso. Inicia sesión para continuar.');
       setTimeout(() => {
         router.push('/login');
-      }, 2000); 
+      }, 2000);
     } catch (err: unknown) {
-      console.error(err);
-      if (
-        typeof err === 'object' &&
-        err !== null &&
-        'response' in err &&
-        typeof (err as any).response === 'object' &&
-        'data' in (err as any).response &&
-        typeof (err as any).response.data === 'object'
-      ) {
-        setError((err as any).response.data.message || 'Error al registrarse');
-      } else {
-        setError('Error desconocido al registrarse');
-      }
+      const axiosError = err as AxiosError<{ message?: string }>;
+      const message = axiosError.response?.data?.message || 'Error al registrarse';
+      setError(message);
     } finally {
       setLoading(false);
     }
