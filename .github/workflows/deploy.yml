@@ -1,9 +1,9 @@
-name: Deploy to EC2 (Only on Master)
+name: Deploy to EC2 (QA)
 
 on:
   push:
     branches:
-      - master
+      - qa
 
 jobs:
   deploy:
@@ -18,16 +18,19 @@ jobs:
       with:
         node-version: 18
 
-    - name: Construir imagen Docker
-      run: docker build -t arieling/frontend-central .
+    - name: Construir imagen Docker (QA)
+      run: docker build -t arieling/frontend-central:qa .
 
     - name: Login en Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Push a Docker Hub
-      run: docker push arieling/frontend-central
+      run: docker push arieling/frontend-central:qa
 
-    - name: Subir .env.local a EC2
+    - name: Crear archivo .env.local desde secreto QA
+      run: echo "${{ secrets.ENV_LOCAL_QA }}" > .env.local
+
+    - name: Subir .env.local a EC2 (QA)
       uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -36,18 +39,18 @@ jobs:
         source: ".env.local"
         target: "/home/${{ secrets.EC2_USER }}/frontend-central/.env.local"
 
-    - name: Desplegar en EC2 vía SSH
+    - name: Desplegar en EC2 (QA)
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          docker pull arieling/frontend-central
+          docker pull arieling/frontend-central:qa
           docker stop frontend-central || true
           docker rm frontend-central || true
           docker run -d \
             --name frontend-central \
             --env-file /home/${{ secrets.EC2_USER }}/frontend-central/.env.local \
             -p 3000:3000 \
-            arieling/frontend-central
+            arieling/frontend-central:qa
