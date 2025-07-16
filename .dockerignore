@@ -1,9 +1,8 @@
-# Node modules (ya se instalan dentro del contenedor)
 node_modules
 
-# Archivos de entorno sensibles
+# Archivos de entorno sensibles (excepto .env.local que se necesita en build)
 .env
-.env.*
+!.env.local   
 
 # Salidas de compilación (Next.js las regenera)
 .next
