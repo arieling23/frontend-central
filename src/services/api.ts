@@ -64,9 +64,9 @@ const api = Object.assign(instance, {
     instance.post('/recovery/reset', { token, newPassword }),
 
   // ⚙️ Preferencias
-  getPreferences: () => instance.get('/api/preferences/me'),
-  updatePreferences: (data: Preferences) => instance.put('/api/preferences/me', data),
-  resetPreferences: () => instance.post('/api/preferences/reset'),
+  getPreferences: () => instance.get('/preferences/me'),
+  updatePreferences: (data: Preferences) => instance.put('/preferences/me', data),
+  resetPreferences: () => instance.post('/preferences/reset'),
 
   // 🔐 RBAC
   getAllRoles: () => instance.get('/rbac/roles'),
