@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+import { api } from '@/services/api'; 
 
 type DecodedJWT = {
   userId: string;
@@ -18,14 +19,11 @@ type Role = {
 
 const RBACPage = () => {
   const router = useRouter();
-  const [token, setToken] = useState<string | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [userId, setUserId] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(true);
-
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const stored = localStorage.getItem('token');
@@ -40,8 +38,6 @@ const RBACPage = () => {
         router.push('/unauthorized');
         return;
       }
-
-      setToken(stored);
     } catch (err) {
       console.error('Error al decodificar el token', err);
       router.push('/login');
@@ -49,18 +45,10 @@ const RBACPage = () => {
   }, [router]);
 
   useEffect(() => {
-    if (!token || !API_URL) return;
-
     const fetchRoles = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/rbac/roles`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) throw new Error('No se pudo obtener roles');
-
-        const data: Role[] = await res.json();
-        setRoles(data);
+        const res = await api.getAllRoles();
+        setRoles(res.data);
       } catch (error) {
         console.error('❌ Error al obtener roles:', error);
         setMensaje('❌ Error al obtener roles');
@@ -70,7 +58,7 @@ const RBACPage = () => {
     };
 
     fetchRoles();
-  }, [token, API_URL]);
+  }, []);
 
   const handleAssign = async () => {
     if (!userId || !selectedRole) {
@@ -79,27 +67,16 @@ const RBACPage = () => {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/rbac/assign-role`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ userId, role: selectedRole }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setMensaje('✅ Rol asignado correctamente');
-        setUserId('');
-        setSelectedRole('');
-      } else {
-        setMensaje(`❌ Error: ${data.message || 'No se pudo asignar el rol'}`);
-      }
-    } catch (error) {
-      console.error('❌ Error inesperado al asignar rol:', error);
-      setMensaje('❌ Error inesperado al asignar rol');
+      await api.assignRoleToUser(userId, selectedRole);
+      setMensaje('✅ Rol asignado correctamente');
+      setUserId('');
+      setSelectedRole('');
+    } catch (error: any) {
+      console.error('❌ Error al asignar rol:', error);
+      setMensaje(
+        '❌ Error: ' +
+          (error.response?.data?.message || 'No se pudo asignar el rol')
+      );
     }
   };
 
