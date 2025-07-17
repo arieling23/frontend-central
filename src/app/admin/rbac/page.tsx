@@ -51,7 +51,7 @@ export default function RBACPage() {
 
     const fetchRoles = async () => {
       try {
-        const res = await fetch('http://localhost:4005/api/rbac/roles', {
+        const res = await fetch('http://3.218.134.95:4005/api/rbac/roles', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -77,7 +77,7 @@ export default function RBACPage() {
     }
 
     try {
-      const res = await fetch('http://localhost:4005/api/rbac/assign-role', {
+      const res = await fetch('http://3.218.134.95:4005/api/rbac/assign-role', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
