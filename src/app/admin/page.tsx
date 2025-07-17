@@ -15,5 +15,5 @@ const AdminPage: FC = () => {
   );
 };
 
-// Solo 'admin' puede acceder
+
 export default withAuth(AdminPage, ['admin']);
