@@ -47,9 +47,9 @@ const api = Object.assign(instance, {
     instance.post('/api/users/register', { name, email, password }),
 
   login: (email: string, password: string) =>
-    instance.post('/auth/login', { email, password }),
+    instance.post('/api/auth/login', { email, password }),
 
-  getProfile: () => instance.get('/auth/profile'),
+  getProfile: () => instance.get('/api/auth/profile'),
 
   // 👤 Perfil de usuario
   getUserProfile: () => instance.get('/profiles/pro'),
