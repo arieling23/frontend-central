@@ -71,12 +71,16 @@ const RBACPage = () => {
       setMensaje('✅ Rol asignado correctamente');
       setUserId('');
       setSelectedRole('');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        setMensaje(
+          '❌ Error: ' + (err.response?.data?.message || 'No se pudo asignar el rol')
+        );
+      } else {
+        setMensaje('❌ Error inesperado al asignar rol');
+      }
       console.error('❌ Error al asignar rol:', error);
-      setMensaje(
-        '❌ Error: ' +
-          (error.response?.data?.message || 'No se pudo asignar el rol')
-      );
     }
   };
 
