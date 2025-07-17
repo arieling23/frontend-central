@@ -52,10 +52,10 @@ const api = Object.assign(instance, {
   getProfile: () => instance.get('/api/auth/profile'),
 
   // 👤 Perfil de usuario
-  getUserProfile: () => instance.get('/profiles/pro'),
-  updateUserProfile: (data: UserProfile) => instance.put('/profiles/pro', data),
+  getUserProfile: () => instance.get('api/profiles/pro'),
+  updateUserProfile: (data: UserProfile) => instance.put('api/profiles/pro', data),
   createUserProfile: (data?: UserProfile) =>
-    instance.post('/profiles/pro', data ?? {}),
+    instance.post('api/profiles/pro', data ?? {}),
 
   // 🔄 Recuperación de contraseña
   requestPasswordRecovery: (email: string) =>
