@@ -71,11 +71,11 @@ const api = Object.assign(instance, {
   // 🔐 RBAC
   getAllRoles: () => instance.get('/rbac/roles'),
   assignRoleToUser: (userId: string, role: string) =>
-    instance.post('/rbac/assign-role', { userId, role }),
+    instance.post('/api/rbac/assign-role', { userId, role }),
   getUserRole: (userId: string) =>
-    instance.get(`/rbac/user/${userId}/roles`),
+    instance.get(`/api/rbac/user/${userId}/roles`),
   checkUserPermission: (permission: string) =>
-    instance.get(`/rbac/check?permission=${permission}`),
+    instance.get(`/api/rbac/check?permission=${permission}`),
 
   // 🛫 Catálogo de Rutas (GraphQL)
   getRoutesCatalog: () =>
