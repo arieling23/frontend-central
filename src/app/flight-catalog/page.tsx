@@ -17,7 +17,7 @@ type JwtPayload = {
   iat: number;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
 
 export default function FlightCatalogPage() {
   const [vuelos, setVuelos] = useState<Vuelo[]>([]);

@@ -135,7 +135,7 @@ const api = Object.assign(instance, {
 
   // ✈️ Catálogo de Vuelos (GraphQL)
   getFlightsCatalog: () =>
-    instance.post('/flight-catalog', {
+    instance.post('/api/flight-catalog', {
       query: `query {
         getFlights {
           id
@@ -153,7 +153,7 @@ const api = Object.assign(instance, {
     destination: string,
     departureTime: string
   ) =>
-    instance.post('/flight-catalog', {
+    instance.post('/api/flight-catalog', {
       query: `mutation {
         createFlight(
           code: "${code}",
