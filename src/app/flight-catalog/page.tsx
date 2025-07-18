@@ -17,7 +17,7 @@ type JwtPayload = {
   iat: number;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
 
 export default function FlightCatalogPage() {
   const [vuelos, setVuelos] = useState<Vuelo[]>([]);
@@ -59,7 +59,7 @@ export default function FlightCatalogPage() {
   const fetchFlights = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${API_URL}/flight-catalog`, {
+      const res = await fetch(`${API_URL}/api/flight-catalog`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export default function FlightCatalogPage() {
   const createFlight = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${API_URL}/flight-catalog`, {
+      const res = await fetch(`${API_URL}/api/flight-catalog`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
