@@ -19,16 +19,26 @@ jobs:
         node-version: 18
 
     - name: Crear archivo .env.local desde secreto QA
-      run: echo "${{ secrets.ENV_LOCAL_QA }}" > .env.local
+      run: |
+        echo "${{ secrets.ENV_LOCAL_QA }}" > .env.local
+
+    - name: Verificar valor de NEXT_PUBLIC_API_URL (debug)
+      run: |
+        echo "Valor de NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}"
 
     - name: Construir imagen Docker (QA) con variable pública
-      run: docker build --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} -t arieling/frontend-central:qa .
+      run: |
+        docker build \
+          --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+          -t arieling/frontend-central:qa .
 
     - name: Login en Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Push a Docker Hub
-      run: docker push arieling/frontend-central:qa
+      run: |
+        docker push arieling/frontend-central:qa
 
     - name: Subir .env.local a EC2 (QA)
       uses: appleboy/scp-action@v0.1.4
