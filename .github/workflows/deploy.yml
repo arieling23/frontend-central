@@ -21,8 +21,8 @@ jobs:
     - name: Crear archivo .env.local desde secreto QA
       run: echo "${{ secrets.ENV_LOCAL_QA }}" > .env.local
 
-    - name: Construir imagen Docker (QA)
-      run: docker build -t arieling/frontend-central:qa .
+    - name: Construir imagen Docker (QA) con variable pública
+      run: docker build --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} -t arieling/frontend-central:qa .
 
     - name: Login en Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
