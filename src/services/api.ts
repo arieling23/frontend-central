@@ -59,9 +59,9 @@ const api = Object.assign(instance, {
 
   // 🔄 Recuperación de contraseña
   requestPasswordRecovery: (email: string) =>
-    instance.post('/recovery/request', { email }),
+    instance.post('/api/recovery/request', { email }),
   resetPassword: (token: string, newPassword: string) =>
-    instance.post('/recovery/reset', { token, newPassword }),
+    instance.post('/api/recovery/reset', { token, newPassword }),
 
   // ⚙️ Preferencias
   getPreferences: () => instance.get('/api/preferences/me'),
