@@ -69,7 +69,7 @@ const api = Object.assign(instance, {
   resetPreferences: () => instance.post('/api/preferences/reset'),
 
   // 🔐 RBAC
-  getAllRoles: () => instance.get('api/rbac/roles'),
+  getAllRoles: () => instance.get('/api/rbac/roles'),
   assignRoleToUser: (userId: string, role: string) =>
     instance.post('/api/rbac/assign-role', { userId, role }),
   getUserRole: (userId: string) =>
