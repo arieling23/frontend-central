@@ -18,7 +18,7 @@ const PricingRulesPage: React.FC = () => {
 
   const loadRules = async () => {
     try {
-      const res = await api.post('/pricing', {
+      const res = await api.post('/api/pricing', {
         query: `query {
           pricingRules {
             id
@@ -55,7 +55,7 @@ const PricingRulesPage: React.FC = () => {
     }
 
     try {
-      await api.post('/pricing', {
+      await api.post('/api/pricing', {
         query: `
           mutation CreateRule($ruleName: String!, $basePrice: Float!, $multiplier: Float!) {
             createPricingRule(ruleName: $ruleName, basePrice: $basePrice, multiplier: $multiplier) {
