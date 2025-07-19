@@ -168,7 +168,7 @@ const api = Object.assign(instance, {
 
   // 🎫 Disponibilidad de Asientos (GraphQL)
   getAvailableSeats: (flightId: number) =>
-    instance.post('/seat', {
+    instance.post('/api/seat', {
       query: `
         query GetAvailableSeats($id: Int!) {
           availableSeats(flightId: $id) {
@@ -182,7 +182,7 @@ const api = Object.assign(instance, {
     }),
 
   createSeat: (flightId: number, seatNumber: string) =>
-    instance.post('/seat', {
+    instance.post('/api/seat', {
       query: `
         mutation CreateSeat($flightId: Int!, $seatNumber: String!) {
           createSeat(flightId: $flightId, seatNumber: $seatNumber) {
@@ -194,7 +194,7 @@ const api = Object.assign(instance, {
     }),
 
   deleteSeat: (seatId: number) =>
-    instance.post('/seat', {
+    instance.post('/api/seat', {
       query: `
         mutation DeleteSeat($seatId: Int!) {
           deleteSeat(seatId: $seatId)
@@ -207,7 +207,7 @@ const api = Object.assign(instance, {
     seatId: number,
     data: { seatNumber: string; isAvailable: boolean }
   ) =>
-    instance.post('/seat', {
+    instance.post('/api/seat', {
       query: `
         mutation UpdateSeat($seatId: Int!, $seatNumber: String!, $isAvailable: Boolean!) {
           updateSeat(seatId: $seatId, seatNumber: $seatNumber, isAvailable: $isAvailable) {
