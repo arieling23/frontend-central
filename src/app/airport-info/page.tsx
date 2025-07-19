@@ -67,7 +67,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch(`${API_URL}/airport`, {
+      const response = await fetch(`${API_URL}/api/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch(`${API_URL}/airport`, {
+      const response = await fetch(`${API_URL}/api/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch(`${API_URL}/airport`, {
+      const response = await fetch(`${API_URL}/api/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ export default function AirportInfoPage() {
     `;
 
     try {
-      const response = await fetch(`${API_URL}/airport`, {
+      const response = await fetch(`${API_URL}/api/airport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
