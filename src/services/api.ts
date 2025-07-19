@@ -79,7 +79,7 @@ const api = Object.assign(instance, {
 
   // 🛫 Catálogo de Rutas (GraphQL)
   getRoutesCatalog: () =>
-    instance.post('/routes', {
+    instance.post('/api/routes', {
       query: `query {
         getRoutes {
           id
@@ -95,7 +95,7 @@ const api = Object.assign(instance, {
     }),
 
   createRoute: (origin: string, destination: string, distance_km: number) =>
-    instance.post('/routes', {
+    instance.post('/api/routes', {
       query: `
         mutation CreateRoute($name: String!, $segmentsData: [SegmentInput!]!) {
           createRoute(name: $name, segmentsData: $segmentsData) {
@@ -119,7 +119,7 @@ const api = Object.assign(instance, {
     name: string,
     segments: { origin: string; destination: string; distanceKm: number }[]
   ) =>
-    instance.post('/routes', {
+    instance.post('/api/routes', {
       query: `
         mutation CreateRoute($name: String!, $segmentsData: [SegmentInput!]!) {
           createRoute(name: $name, segmentsData: $segmentsData) {
