@@ -224,7 +224,7 @@ const api = Object.assign(instance, {
 
   // 🛬 Catálogo de Aeropuertos (GraphQL)
   getAirportsCatalog: () =>
-    instance.post('/airport', {
+    instance.post('/api/airport', {
       query: `query {
         airports {
           id
@@ -237,7 +237,7 @@ const api = Object.assign(instance, {
     }),
 
   createAirport: (name: string, city: string, country: string, iataCode: string) =>
-    instance.post('/airport', {
+    instance.post('/api/airport', {
       query: `
         mutation CreateAirport($name: String!, $city: String!, $country: String!, $iataCode: String!) {
           createAirport(name: $name, city: $city, country: $country, iataCode: $iataCode) {
@@ -253,7 +253,7 @@ const api = Object.assign(instance, {
     }),
 
   updateAirport: (id: number, name: string, city: string, country: string, iataCode: string) =>
-    instance.post('/airport', {
+    instance.post('/api/airport', {
       query: `
         mutation UpdateAirport($id: Int!, $name: String!, $city: String!, $country: String!, $iataCode: String!) {
           updateAirport(id: $id, name: $name, city: $city, country: $country, iataCode: $iataCode) {
@@ -269,7 +269,7 @@ const api = Object.assign(instance, {
     }),
 
   deleteAirport: (id: number) =>
-    instance.post('/airport', {
+    instance.post('/api/airport', {
       query: `
         mutation DeleteAirport($id: Int!) {
           deleteAirport(id: $id)
@@ -280,7 +280,7 @@ const api = Object.assign(instance, {
 
   // 💲 Reglas de Precios (GraphQL)
   getPricingRules: () =>
-    instance.post('/pricing', {
+    instance.post('/api/pricing', {
       query: `
         query {
           pricingRules {
@@ -294,7 +294,7 @@ const api = Object.assign(instance, {
     }),
 
   createPricingRule: (ruleName: string, basePrice: number, multiplier: number) =>
-    instance.post('/pricing', {
+    instance.post('/api/pricing', {
       query: `
         mutation CreateRule($ruleName: String!, $basePrice: Float!, $multiplier: Float!) {
           createPricingRule(ruleName: $ruleName, basePrice: $basePrice, multiplier: $multiplier) {
