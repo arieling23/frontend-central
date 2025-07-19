@@ -96,39 +96,42 @@ export default function FlightCatalogPage() {
       setError("Error de conexión con el backend.");
     }
   };
-
-  const createFlight = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${API_URL}/api/flight-catalog`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          query: `
-            mutation CreateFlight($code: String!, $origin: String!, $destination: String!, $departureTime: String!) {
-              createFlight(code: $code, origin: $origin, destination: $destination, departureTime: $departureTime) {
-                id
-              }
+   const createFlight = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`${API_URL}/api/flight-catalog`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        query: `
+          mutation CreateFlight($code: String!, $origin: String!, $destination: String!, $departureTime: DateTime!) {
+            createFlight(code: $code, origin: $origin, destination: $destination, departureTime: $departureTime) {
+              id
             }
-          `,
-          variables: form,
-        }),
-      });
+          }
+        `,
+        variables: {
+          ...form,
+          departureTime: form.departureTime.length === 16 ? form.departureTime + ":00" : form.departureTime,
+        },
+      }),
+    });
 
-      const data = await res.json();
-      if (data.errors) {
-        setError("Error al crear vuelo.");
-      } else {
-        setForm({ code: "", origin: "", destination: "", departureTime: "" });
-        fetchFlights();
-      }
-    } catch {
-      setError("Error al enviar datos al backend.");
+    const data = await res.json();
+    if (data.errors) {
+      setError("Error al crear vuelo.");
+    } else {
+      setForm({ code: "", origin: "", destination: "", departureTime: "" });
+      fetchFlights();
     }
-  };
+  } catch {
+    setError("Error al enviar datos al backend.");
+  }
+};
+
 
   useEffect(() => {
     fetchFlights();
